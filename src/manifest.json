@@ -1,0 +1,12 @@
+{
+  "id": "StorageCapacityMod",
+  "version": "1.0.0",
+  "display_name": "Storage Capacity Override",
+  "description_short": "Dynamically change the capacity of any storage building from its inspector UI.",
+  "description_long": "Adds capacity override controls to every storage building inspector (unit, fluid, and loose). Click any storage to see +/- buttons and a custom capacity input. Changes persist across saves.",
+  "authors": "Nimb",
+  "primary_dlls": [ "StorageCapacityMod.dll" ],
+  "non_locking_dll_load": true,
+  "can_add_to_saved_game": true,
+  "can_remove_from_saved_game": true
+}
