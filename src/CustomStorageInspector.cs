@@ -30,6 +30,7 @@ public abstract class CustomStorageInspector : BaseStorageInspector<Storage>
 {
     private Label m_currentCapLabel;
     private Label m_defaultCapLabel;
+    private TxtField m_capacityInput;
 
     protected CustomStorageInspector(
         UiContext context,
@@ -75,13 +76,19 @@ public abstract class CustomStorageInspector : BaseStorageInspector<Storage>
                 .FlexGrow(0.5f)
         );
 
+        // ── Custom capacity input ──
+        AddPanelRow(
+            row => row.JustifyItemsSpaceBetween(),
+            m_capacityInput = new TxtField("".AsLoc())
+                .FlexGrow(1f),
+            CreateCapacityButton("Set", () => ApplyCapacityFromInput())
+        );
+
         // ── Quick adjustment buttons ──
         AddPanelRow(
             row => row.JustifyItemsSpaceBetween(),
             CreateCapacityButton("Half", () => ApplyCapacityMultiplier(0.5)),
             CreateCapacityButton("-500", () => ApplyCapacityDelta(-500)),
-            CreateCapacityButton("-100", () => ApplyCapacityDelta(-100)),
-            CreateCapacityButton("+100", () => ApplyCapacityDelta(100)),
             CreateCapacityButton("+500", () => ApplyCapacityDelta(500)),
             CreateCapacityButton("x2", () => ApplyCapacityMultiplier(2.0))
         );
@@ -116,6 +123,20 @@ public abstract class CustomStorageInspector : BaseStorageInspector<Storage>
             .TextAlign(TextAlignment.CenterMiddle)
             .OnClick(onClick)
             .FlexGrow(1f);
+    }
+
+    private void ApplyCapacityFromInput()
+    {
+        if (Entity == null) return;
+        string text = m_capacityInput.GetText();
+        if (int.TryParse(text, out int newCap))
+        {
+            CapacityOverrideManager.Instance.SetCapacity(Entity, newCap);
+        }
+        else
+        {
+            Log.Warning($"StorageCapacityMod: Invalid capacity input: '{text}'");
+        }
     }
 
     private void ApplyCapacityDelta(int delta)

@@ -30,7 +30,7 @@ public class CapacityOverrideManager
     /// UI rendering, or integer overflow in calculations.
     /// Quantity wraps an int, but we cap well below int.MaxValue.
     /// </summary>
-    public const int MAX_CAPACITY = 1_000_000;
+    public const int MAX_CAPACITY = 500_000_000;
     public const int MIN_CAPACITY = 1;
 
     private static readonly MethodInfo s_forceCapacityMethod = typeof(StorageBase)
