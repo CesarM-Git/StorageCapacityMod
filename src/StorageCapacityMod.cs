@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using Mafi;
 using Mafi.Collections;
 using Mafi.Core.Buildings.Storages;
+using Mafi.Core.Buildings.Storages.NuclearWaste;
 using Mafi.Core.Entities;
 using Mafi.Core.Game;
 using Mafi.Core.GameLoop;
@@ -64,12 +65,15 @@ public sealed class StorageCapacityMod : IMod, IDisposable
             object dict = dictField.GetValue(inspectorsManager);
             Type dictType = dict.GetType();
 
-            // Replace the built-in Storage -> StorageInspector entry.
+            // Replace the built-in Storage -> StorageInspector entry,
+            // and also NuclearWasteStorage -> NuclearWasteStorageInspector
+            // (the game registers it separately so it never falls through to Storage).
             PropertyInfo indexer = dictType.GetProperty("Item");
             if (indexer != null)
             {
                 indexer.SetValue(dict, concreteType, new object[] { typeof(Storage) });
-                Log.Info("StorageCapacityMod: patched InspectorsManager via indexer.");
+                indexer.SetValue(dict, concreteType, new object[] { typeof(NuclearWasteStorage) });
+                Log.Info("StorageCapacityMod: patched InspectorsManager for Storage and NuclearWasteStorage via indexer.");
             }
             else
             {
@@ -80,7 +84,9 @@ public sealed class StorageCapacityMod : IMod, IDisposable
                 {
                     removeMethod.Invoke(dict, new object[] { typeof(Storage) });
                     addMethod.Invoke(dict, new object[] { typeof(Storage), concreteType });
-                    Log.Info("StorageCapacityMod: patched InspectorsManager via Remove+Add.");
+                    removeMethod.Invoke(dict, new object[] { typeof(NuclearWasteStorage) });
+                    addMethod.Invoke(dict, new object[] { typeof(NuclearWasteStorage), concreteType });
+                    Log.Info("StorageCapacityMod: patched InspectorsManager for Storage and NuclearWasteStorage via Remove+Add.");
                 }
                 else
                 {
